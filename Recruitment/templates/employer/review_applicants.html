@@ -1,0 +1,48 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<h4 class="mb-3">لیست داوطلبان پروژه</h4>
+
+<form method="get" class="mb-4 d-flex" style="max-width: 400px;">
+    <input type="text" name="skill" class="form-control me-2" placeholder="جستجو بر اساس مهارت" value="{{ query }}">
+    <button type="submit" class="btn btn-outline-primary">جستجو</button>
+</form>
+
+<table class="table table-bordered table-striped text-center align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>نام</th>
+            <th>معدل</th>
+            <th>مهارت‌ها</th>
+            <th>وضعیت</th>
+            <th>عملیات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.job_seeker.full_name }}</td>
+            <td>{{ app.job_seeker.gpa }}</td>
+            <td>{{ app.job_seeker.skill }}</td>
+            <td>{{ app.get_status_display }}</td>
+            <td>
+                {% if app.status == "pending" %}
+                <a href="{% url 'change_application_status' app.id 'approved' %}" class="btn btn-success btn-sm me-1">
+                    تأیید
+                </a>
+                <a href="{% url 'change_application_status' app.id 'rejected' %}" class="btn btn-danger btn-sm">
+                    رد
+                </a>
+                {% else %}
+                <span class="text-muted">نهایی شده</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-muted">داوطلبی یافت نشد.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

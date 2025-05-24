@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if messages %}
+    <div class="alert alert-danger">
+        <ul class="mb-0  text-start">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center">ثبت نام در سیستم جذب مهندسین صنایع</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" class="rtl-form" id="registerForm">
+                {% csrf_token %}
+
+                <!-- نوع کاربر -->
+                <div class="form-group mb-4">
+                    <label class="fw-bold" style="font-size: 23px;">نوع کاربر:</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="user_type" id="jobseeker" value="jobseeker" {% if user_type == 'jobseeker' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="jobseeker">کارجو</label>
+
+                        <input type="radio" class="btn-check" name="user_type" id="employer" value="employer" {% if user_type == 'employer' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="employer">کارفرما</label>
+                    </div>
+                </div>
+
+                <!-- فیلدهای عمومی -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="username" name="username" required minlength="4">
+                            <label for="username">نام کاربری</label>
+                            <small class="text-muted">حداقل ۴ کاراکتر</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="full_name" name="full_name" required pattern="^[آ-ی\s]+\s+[آ-ی\s]+$">
+                            <label for="full_name">نام و نام خانوادگی</label>
+                            <small class="text-muted">فقط حروف فارسی با حداقل یک فاصله</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="password1" name="password1" required>
+                            <label for="password1">رمز عبور</label>
+                            <small class="text-muted">رمز عبور باید قوی و ایمن باشد</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="password2" name="password2" required>
+                            <label for="password2">تکرار رمز عبور</label>
+                            <small class="text-muted">دوباره رمز عبور را وارد کنید</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="tel" class="form-control" id="phone_number" name="phone_number" required pattern="^09\d{9}$">
+                            <label for="phone_number">شماره موبایل</label>
+                            <small class="text-muted">فرمت: ۰۹۱۲۳۴۵۶۷۸۹</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- فیلدهای خاص -->
+                <div id="specific-fields">
+                    {% if user_type == 'jobseeker' %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="gpa" name="gpa" step="0.01" min="0" max="20">
+                                <label for="gpa">معدل</label>
+                                <small class="text-muted">بین ۰ تا ۲۰</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="company_name" name="company_name" required maxlength="20">
+                                <label for="company_name">نام شرکت</label>
+                                <small class="text-muted">حداکثر ۲۰ کاراکتر</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-4 py-2">
+                    <i class="fas fa-user-plus me-2"></i>ثبت نام
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <p>حساب کاربری دارید؟
+                    <a href="{% url 'login' %}" class="text-decoration-none">وارد شوید</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- اسکریپت -->
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+        const pass1 = document.getElementById("password1").value;
+        const pass2 = document.getElementById("password2").value;
+
+        if (pass1 !== pass2) {
+            e.preventDefault();
+            alert("رمز عبور و تکرار آن مطابقت ندارند.");
+        }
+    });
+
+    document.querySelectorAll('input[name="user_type"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const specificFields = document.getElementById('specific-fields');
+            if (this.value === 'jobseeker') {
+                specificFields.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="gpa" name="gpa" step="0.01" min="0" max="20">
+                            <label for="gpa">معدل</label>
+                            <small class="text-muted">بین ۰ تا ۲۰</small>
+                        </div>
+                    </div>
+                </div>`;
+            } else {
+                specificFields.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="company_name" name="company_name" required maxlength="20">
+                            <label for="company_name">نام شرکت</label>
+                            <small class="text-muted">حداکثر ۲۰ کاراکتر</small>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        });
+    });
+</script>
+{% endblock content %}

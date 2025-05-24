@@ -1,0 +1,82 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- فیلتر جستجو -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white py-3">
+      <h4 class="text-center mb-0">فیلتر پروژه‌ها</h4>
+    </div>
+    <div class="card-body">
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">عنوان پروژه</label>
+          <input type="text" name="title" class="form-control" placeholder="جستجوی عنوان..." value="{{ request.GET.q }}">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">حداقل حقوق</label>
+          <input type="number" step="0.01" name="min_salary" class="form-control" value="{{ request.GET.min_salary }}">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">حداکثر حقوق</label>
+          <input type="number" step="0.01" name="max_salary" class="form-control" value="{{ request.GET.max_salary }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">نام کارفرما</label>
+          <input type="text" name="employer" class="form-control" placeholder="مثلاً دیجی‌کالا" value="{{ request.GET.employer }}">
+        </div>
+
+
+        <div class="col-md-6 text-start mt-4">
+          <button type="submit" class="btn btn-success">اعمال فیلتر</button>
+          <a href="{% url 'job_project-list' %}" class="btn btn-secondary">حذف فیلتر</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نمایش پروژه‌ها -->
+  {% for Project in projects %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{ Project.title }}</h5>
+      <h6 class="card-subtitle mb-2 text-muted">کارفرما: {{ Project.employer.company_name }}</h6>
+      <p class="card-text">
+        توضیحات: {{ Project.description|default:"-" }}<br>
+        ظرفیت: {{ Project.applications.count }} / {{ Project.required_candidates }}<br>
+        حقوق پیشنهادی: {{ Project.salary }} میلیون تومان
+      </p>
+
+      {% if Project.id in applied_projects %}
+        <form method="post" action="{% url 'withdraw-application' Project.id %}" class="mb-2" onsubmit="return confirm('آیا از انصراف اطمینان دارید؟');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger btn-sm">انصراف از درخواست</button>
+        </form>
+        <p class="text-success">شما قبلاً درخواست داده‌اید.</p>
+
+      {% elif Project.applications.count >= Project.required_candidates %}
+        <p class="text-danger">ظرفیت این پروژه تکمیل شده است.</p>
+
+      {% else %}
+        <form method="post" action="{% url 'apply-to-project' Project.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary btn-sm">ثبت درخواست</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <p>هیچ پروژه‌ای مطابق فیلترهای شما پیدا نشد.</p>
+  {% endfor %}
+
+  {% if messages %}
+  <ul class="mt-4">
+    {% for message in messages %}
+      <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+</div>
+{% endblock %}

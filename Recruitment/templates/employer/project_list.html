@@ -1,0 +1,28 @@
+{% extends "base2.html" %}
+{% block title %}پروژه‌های من{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">پروژه‌های ثبت‌شده</h2>
+
+    {% for project in projects %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">{{ project.title }}</h5>
+            <p class="card-text text-muted">{{ project.description|truncatewords:25 }}</p>
+
+            <p><strong>تعداد مورد نیاز:</strong> {{ project.required_candidates }} نفر</p>
+            <p><strong>حقوق پیشنهادی:</strong> {{ project.salary }} میلیون تومان</p>
+            <p><strong>تعداد درخواست‌ها:</strong> {{ project.applications.count }}</p>
+
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{% url 'edit_project' project.id %}" class="btn btn-warning btn-sm">ویرایش</a>
+                <a href="{% url 'review_applicants' project.id %}" class="btn btn-sm btn-primary">بررسی داوطلبان</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info text-center">هیچ پروژه‌ای توسط شما ثبت نشده است.</div>
+    {% endfor %}
+</div>
+{% endblock %}

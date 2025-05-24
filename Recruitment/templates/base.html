@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>سیستم جذب کارآموز</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- لینک فونت وزیری از گوگل فونت -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* اعمال فونت و استایل برای تمام متن‌های فارسی */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700; /* حالت Bold */
+        }
+        .alert-danger ul {
+            text-align: left !important;
+            direction: ltr; 
+            text-align: left;
+            unicode-bidi: embed;  
+        }
+        .alert-danger li {
+            list-style-position: inside;  
+        }
+        
+        /* برای عناوین انگلیسی */
+        .en-text {
+            font-family: Arial, sans-serif;
+            font-weight: normal;
+        }
+        .rtl-form { text-align: right; }
+        .errorlist { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
